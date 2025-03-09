@@ -9,3 +9,7 @@
 - Added `SearchClient` to search for artists, releases, labels, and more.
 - Added unit tests for all clients.
 
+## 0.1.1
+
+### Added
+- Updated to meet publishing requirements.
