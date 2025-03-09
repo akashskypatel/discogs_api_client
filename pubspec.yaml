@@ -1,7 +1,7 @@
 name: discogs_api_client
 description: "A new Flutter package project."
-version: 0.0.1
-homepage:
+version: 0.1.0
+homepage: https://github.com/akashskypatel/discogs_api_client
 
 environment:
   sdk: ^3.7.0
