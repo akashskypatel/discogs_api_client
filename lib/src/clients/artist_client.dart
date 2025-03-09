@@ -9,6 +9,7 @@ import 'package:discogs_api_client/src/clients/discogs_http_client.dart';
 class ArtistClient {
   final DiscogsHttpClient _httpClient;
   final String _baseurl = 'api.discogs.com';
+
   /// Creates an instance of [ArtistClient].
   ///
   /// The [httpClient] is used to make HTTP requests to the Discogs API.
