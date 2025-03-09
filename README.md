@@ -133,9 +133,10 @@ Contributions are welcome! If you find a bug or want to add a feature, please op
 
 1. Fork the repository.
 2. Create a new branch in your own fork (`git checkout -b feature/YourFeatureName`).
-3. Commit your changes to the new branch (`git commit -m 'Add some feature'`).
-4. Push to the branch (`git push origin feature/YourFeatureName`).
-5. Open a pull request in this repo.
+3. Make sure you create test cases for your changes and test thoroughly. Include tests in your commit.
+4. Commit your changes to the new branch (`git commit -m 'Add some feature'`).
+5. Push to the branch (`git push origin feature/YourFeatureName`).
+6. Open a pull request in this repo.
 
 ## License
 
