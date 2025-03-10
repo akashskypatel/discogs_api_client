@@ -9,7 +9,7 @@ void main() async {
   print(artist);
 
   final searchResults = await client.search.search(
-    query: 'Radiohead',
+    query: 'bad bunny',
     type: 'artist',
   );
   print(searchResults);

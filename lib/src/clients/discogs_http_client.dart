@@ -63,7 +63,10 @@ class DiscogsHttpClient extends http.BaseClient {
   /// Throws an [Exception] if the API key or secret is not found in the `.env` file.
   static Future<Map<String, String>> _getApiCredetials() async {
     try {
-      await dotenv.load(fileName: '.env');
+      if (!dotenv.isInitialized) {
+        await dotenv.load(fileName: '.env');
+      }
+
       final apiKey = dotenv.env['DISCOGS_API_KEY'];
       final apiSecret = dotenv.env['DISCOGS_API_SECRET'];
 
@@ -74,7 +77,11 @@ class DiscogsHttpClient extends http.BaseClient {
 
       return {'api_key': apiKey, 'api_secret': apiSecret};
     } catch (e, stackTrace) {
-      _logger.severe('getApiCredetials', e, stackTrace);
+      _logger.severe(
+        'getApiCredetials:${dotenv.isInitialized ? dotenv.env : ''}',
+        e,
+        stackTrace,
+      );
       throw Exception('API key or secret not found in .env file');
     }
   }

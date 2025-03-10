@@ -1,3 +1,8 @@
+## 0.1.3
+
+### Changes
+- Updated example
+
 ## 0.1.2
 
 ### Changes
