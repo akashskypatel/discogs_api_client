@@ -52,7 +52,11 @@ class LabelClient {
   /// Returns a [Map<String, dynamic>] containing the label's releases.
   ///
   /// Throws an [Exception] if the request fails (e.g., due to network issues or an invalid label ID).
-  Future<Map<String, dynamic>> labelReleases(int id, {int? perPage = 500, int? page = 1}) async {
+  Future<Map<String, dynamic>> labelReleases(
+    int id, {
+    int? perPage = 500,
+    int? page = 1,
+  }) async {
     // Build query parameters
     final Map<String, String> queryParams = {
       'per_page': perPage.toString(),

@@ -155,7 +155,7 @@ class DiscogsHttpClient extends http.BaseClient {
     await _checkRateLimit(); // Enforce rate limiting
     // Create a new map of query parameters
     final Map<String, String> updatedQueryParams = Map.from(url.queryParameters)
-    ..addAll({'key': apiKey, 'secret': apiSecret});
+      ..addAll({'key': apiKey, 'secret': apiSecret});
 
     // Create a new Uri with the updated query parameters
     final updatedUri = url.replace(queryParameters: updatedQueryParams);
@@ -190,7 +190,7 @@ class DiscogsHttpClient extends http.BaseClient {
     await _checkRateLimit(); // Enforce rate limiting
     // Create a new map of query parameters
     final Map<String, String> updatedQueryParams = Map.from(url.queryParameters)
-    ..addAll({'key': apiKey, 'secret': apiSecret});
+      ..addAll({'key': apiKey, 'secret': apiSecret});
 
     // Create a new Uri with the updated query parameters
     final updatedUri = url.replace(queryParameters: updatedQueryParams);
@@ -223,7 +223,7 @@ class DiscogsHttpClient extends http.BaseClient {
     await _checkRateLimit(); // Enforce rate limiting
     // Create a new map of query parameters
     final Map<String, String> updatedQueryParams = Map.from(url.queryParameters)
-    ..addAll({'key': apiKey, 'secret': apiSecret});
+      ..addAll({'key': apiKey, 'secret': apiSecret});
 
     // Create a new Uri with the updated query parameters
     final updatedUri = url.replace(queryParameters: updatedQueryParams);
@@ -256,7 +256,7 @@ class DiscogsHttpClient extends http.BaseClient {
     await _checkRateLimit(); // Enforce rate limiting
     // Create a new map of query parameters
     final Map<String, String> updatedQueryParams = Map.from(url.queryParameters)
-    ..addAll({'key': apiKey, 'secret': apiSecret});
+      ..addAll({'key': apiKey, 'secret': apiSecret});
 
     // Create a new Uri with the updated query parameters
     final updatedUri = url.replace(queryParameters: updatedQueryParams);

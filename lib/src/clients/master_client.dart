@@ -57,7 +57,7 @@ class MasterClient {
     String? format,
     String? label,
     String? release,
-    String? country,    
+    String? country,
     String? sort,
     String? sortOrder,
     int? perPage = 500,

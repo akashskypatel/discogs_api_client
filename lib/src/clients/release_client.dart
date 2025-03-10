@@ -50,7 +50,10 @@ class ReleaseClient {
   /// Returns a [Map<String, dynamic>] containing the user's rating for the release.
   ///
   /// Throws an [Exception] if the request fails (e.g., due to network issues or an invalid release ID or username).
-  Future<Map<String, dynamic>> releasesRatingByUser(int id, {String? username}) async {
+  Future<Map<String, dynamic>> releasesRatingByUser(
+    int id, {
+    String? username,
+  }) async {
     // Build the URI
     final uri = Uri.https(_baseurl, '/releases/$id/rating/$username');
 

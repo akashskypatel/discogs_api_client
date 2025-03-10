@@ -4,7 +4,6 @@ import 'unit/artist_client_test.dart' as artist;
 import 'unit/master_client_test.dart' as master;
 import 'unit/release_client_test.dart' as release;
 
-
 void main() {
   labels.main();
   search.main();

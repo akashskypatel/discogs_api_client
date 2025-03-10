@@ -8,7 +8,10 @@ void main() async {
   final artist = await client.artists.artists(108713); // Example artist ID
   print(artist);
 
-  final searchResults = await client.search.search(query: 'Radiohead', type: 'artist');
+  final searchResults = await client.search.search(
+    query: 'Radiohead',
+    type: 'artist',
+  );
   print(searchResults);
 
   // Close the client when done

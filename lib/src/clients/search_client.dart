@@ -110,7 +110,7 @@ class SearchClient {
   /// Returns a [Map<String, dynamic>] containing the search results for artists.
   ///
   /// Throws an [Exception] if the request fails (e.g., due to network issues or invalid parameters).
-  Future<Map<String, dynamic>> searchArtist(String name) async {    
+  Future<Map<String, dynamic>> searchArtist(String name) async {
     return search(query: name, type: 'artist');
   }
 }

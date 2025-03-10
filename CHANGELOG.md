@@ -1,3 +1,13 @@
+## 0.1.2
+
+### Changes
+- Updated formatting.
+
+## 0.1.1
+
+### Changes
+- Updated to meet publishing requirements.
+
 ## 0.1.0
 
 ### Added
@@ -9,7 +19,5 @@
 - Added `SearchClient` to search for artists, releases, labels, and more.
 - Added unit tests for all clients.
 
-## 0.1.1
 
-### Added
-- Updated to meet publishing requirements.
+
