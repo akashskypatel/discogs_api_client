@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:discogs_api_client/discogs_api_client.dart';
 
 void main() {
-  late DiscogsApiClient client;
+  late final DiscogsApiClient client;
 
   setUpAll(() async {
     client = await DiscogsApiClient.create();

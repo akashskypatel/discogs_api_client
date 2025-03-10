@@ -1,3 +1,10 @@
+## 0.1.4
+
+### Changes
+- Updated example
+- Updated tests
+- Remove `.env` asset from package pubspec so `.env` loads correctly from parent package
+
 ## 0.1.3
 
 ### Changes

@@ -1,3 +1,5 @@
+//file path: test/all.dart
+
 import 'unit/label_client_test.dart' as labels;
 import 'unit/search_client_test.dart' as search;
 import 'unit/artist_client_test.dart' as artist;

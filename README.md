@@ -12,8 +12,8 @@ A Dart/Flutter client for interacting with the [Discogs API](https://www.discogs
 
 ## Installation
 
-- Download repository
-- Run the following command in project directory
+1. Download repository
+2. Run the following command in project directory
 
 ```bash
 flutter pub get
@@ -27,14 +27,15 @@ To use the Discogs API, you need to obtain an API key and secret from [Discogs D
 
 ### 2. Add Credentials to `.env` File
 
-- Sign up for a Discogs account
-- Create an application under Settings>Developers
-- Create a `.env` file in the root of your project and add your Discogs API credentials:
+1. Sign up for a Discogs account
+2. Create an application under `Settings`>`Developers`
+3. Create a `.env` file in the root of your project and add your Discogs API credentials:
 
 ```plaintext
 DISCOGS_API_KEY=<Your_Consumer_Key>
 DISCOGS_API_SECRET=<Your_Consumer_Secret>
 ```
+4. Initialize dotenv with the `.env` file in your app before initializing DiscogsApiClient
 
 ## Usage
 
@@ -115,16 +116,6 @@ flutter test
 - **Run a specific test file**:
   ```bash
   flutter test test/artist_client_test.dart
-  ```
-
-- **Run a specific test case**:
-  ```bash
-  flutter test test/artist_client_test.dart --plain-name "Fetch artist details"
-  ```
-
-- **Run tests in a specific directory**:
-  ```bash
-  flutter test test/unit
   ```
 
 ## Contributing
