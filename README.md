@@ -45,7 +45,7 @@ DISCOGS_API_SECRET=<Your_Consumer_Secret>
 import 'package:discogs_api_client/discogs_api_client.dart';
 
 void main() async {
-  final client = await DiscogsApiClient.create();
+  final client = DiscogsApiClient();
 
   // Use the client to interact with the Discogs API
   final artist = await client.artists.artists(108713); // Example artist ID

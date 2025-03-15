@@ -11,29 +11,33 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// This client handles rate limiting, authentication, and request/response logging.
 /// It extends [http.BaseClient] to provide additional functionality for Discogs API requests.
 class DiscogsHttpClient extends http.BaseClient {
-  final String _apiKey;
-  final String _apiSecret;
+  static String _apiKey = '';
+  static String _apiSecret = '';
   static final _logger = Logger('DiscogsApi.DiscogsHttpClient');
-  final http.Client _httpClient;
+  static final http.Client _httpClient = http.Client();
 
-  int _rateLimit = 60; // Default rate limit
-  int _rateLimitUsed = 0;
-  int _rateLimitRemaining = 60;
-  DateTime _lastRequestTime = DateTime.now();
-  bool _closed = false;
+  static int _rateLimit = 60; // Default rate limit
+  static int _rateLimitUsed = 0;
+  static int _rateLimitRemaining = 60;
+  static DateTime _lastRequestTime = DateTime.now();
+  static bool _closed = true;
+
+  static final _closedController = StreamController<bool>.broadcast();
 
   bool get closed => _closed;
   String get apiKey => _apiKey;
   String get apiSecret => _apiSecret;
+  StreamController<bool> get closedController => _closedController;
 
-  /// Private constructor for creating an instance of [DiscogsHttpClient].
-  ///
-  /// - [apiKey]: The Discogs API key.
-  /// - [apiSecret]: The Discogs API secret.
   static const Map<String, String> _defaultHeaders = {
     'user-agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.18 Safari/537.36',
   };
+
+  /// Private constructor for creating an instance of [DiscogsHttpClient].
+  DiscogsHttpClient() {
+    _create();
+  }
 
   /// Factory constructor to create an instance of [DiscogsHttpClient] asynchronously.
   ///
@@ -42,18 +46,17 @@ class DiscogsHttpClient extends http.BaseClient {
   /// Returns a [Future<DiscogsHttpClient>].
   ///
   /// Throws an [Exception] if the API key or secret is not found in the `.env` file.
-  DiscogsHttpClient._({required String apiKey, required String apiSecret})
-    : _apiKey = apiKey,
-      _apiSecret = apiSecret,
-      _httpClient = http.Client();
-
-  // Factory constructor to load credentials asynchronously
-  static Future<DiscogsHttpClient> create() async {
-    final credentials = await _getApiCredetials();
-    return DiscogsHttpClient._(
-      apiKey: credentials['api_key']!,
-      apiSecret: credentials['api_secret']!,
-    );
+  static void _create() async {
+    if (_closed) {
+      final credentials = await _getApiCredetials();
+      if (_apiKey == '') _apiKey = credentials['api_key'] ?? '';
+      if (_apiSecret == '') _apiSecret = credentials['api_secret'] ?? '';
+    }
+    if (_apiKey == '' || _apiSecret == '') {
+      throw Exception('API Key or Secret not found in .env file.');
+    }
+    _closed = false;
+    _closedController.add(_closed);
   }
 
   /// Loads the API key and secret from the `.env` file.
@@ -133,6 +136,27 @@ class DiscogsHttpClient extends http.BaseClient {
     }
   }
 
+  /// Checks the credentials by waiting for the `_closedController` stream to emit `false`.
+  Future<bool> _checkCredentials() async {
+    try {
+      // Wait for the stream to emit `false` or timeout after 5 seconds
+      if (!_closed) return true;
+      await _closedController.stream
+          .firstWhere((value) => value == false)
+          .timeout(Duration(seconds: 5));
+      return true; // Stream emitted `false` within the timeout
+    } on TimeoutException {
+      // Timeout occurred
+      return false;
+    } catch (e) {
+      // Handle other errors (e.g., stream error)
+      _logger.severe(
+        'Timed out because credentials could not be loaded from .env: $e',
+      );
+      return false;
+    }
+  }
+
   /// Parses the rate limit headers from the HTTP response.
   ///
   /// Updates the rate limit, used requests, and remaining requests based on the headers.
@@ -160,30 +184,35 @@ class DiscogsHttpClient extends http.BaseClient {
     bool validate = false,
   }) async {
     await _checkRateLimit(); // Enforce rate limiting
-    // Create a new map of query parameters
-    final Map<String, String> updatedQueryParams = Map.from(url.queryParameters)
-      ..addAll({'key': apiKey, 'secret': apiSecret});
+    final creds = _closed ? await _checkCredentials() : true;
+    if (creds) {
+      // Create a new map of query parameters
+      final Map<String, String> updatedQueryParams = Map.from(
+        url.queryParameters,
+      )..addAll({'key': apiKey, 'secret': apiSecret});
 
-    // Create a new Uri with the updated query parameters
-    final updatedUri = url.replace(queryParameters: updatedQueryParams);
+      // Create a new Uri with the updated query parameters
+      final updatedUri = url.replace(queryParameters: updatedQueryParams);
 
-    final response = await super.get(updatedUri, headers: headers);
+      final response = await super.get(updatedUri, headers: headers);
 
-    if (_closed) throw Exception(response);
+      if (_closed) throw Exception(response);
 
-    _parseRateLimitHeaders(response); // Parse rate limit headers
+      _parseRateLimitHeaders(response); // Parse rate limit headers
 
-    if (validate) {
-      _validateResponse(response, response.statusCode);
+      if (validate) {
+        _validateResponse(response, response.statusCode);
+      }
+
+      final now = DateTime.now();
+      _logger.warning(
+        response.body,
+        '${now.minute}.${now.second}.${now.millisecond}-${url.pathSegments.last}-GET',
+      );
+
+      return response;
     }
-
-    final now = DateTime.now();
-    _logger.warning(
-      response.body,
-      '${now.minute}.${now.second}.${now.millisecond}-${url.pathSegments.last}-GET',
-    );
-
-    return response;
+    throw 'Credentials could not be retreived';
   }
 
   @override
@@ -195,28 +224,33 @@ class DiscogsHttpClient extends http.BaseClient {
     bool validate = false,
   }) async {
     await _checkRateLimit(); // Enforce rate limiting
-    // Create a new map of query parameters
-    final Map<String, String> updatedQueryParams = Map.from(url.queryParameters)
-      ..addAll({'key': apiKey, 'secret': apiSecret});
+    final creds = _closed ? await _checkCredentials() : true;
+    if (creds) {
+      // Create a new map of query parameters
+      final Map<String, String> updatedQueryParams = Map.from(
+        url.queryParameters,
+      )..addAll({'key': apiKey, 'secret': apiSecret});
 
-    // Create a new Uri with the updated query parameters
-    final updatedUri = url.replace(queryParameters: updatedQueryParams);
+      // Create a new Uri with the updated query parameters
+      final updatedUri = url.replace(queryParameters: updatedQueryParams);
 
-    final response = await super.post(
-      updatedUri,
-      headers: headers,
-      body: body,
-      encoding: encoding,
-    );
+      final response = await super.post(
+        updatedUri,
+        headers: headers,
+        body: body,
+        encoding: encoding,
+      );
 
-    if (_closed) throw Exception(response);
+      if (_closed) throw Exception(response);
 
-    _parseRateLimitHeaders(response); // Parse rate limit headers
+      _parseRateLimitHeaders(response); // Parse rate limit headers
 
-    if (validate) {
-      _validateResponse(response, response.statusCode);
+      if (validate) {
+        _validateResponse(response, response.statusCode);
+      }
+      return response;
     }
-    return response;
+    throw 'Credentials could not be retreived';
   }
 
   @override
@@ -228,28 +262,33 @@ class DiscogsHttpClient extends http.BaseClient {
     bool validate = false,
   }) async {
     await _checkRateLimit(); // Enforce rate limiting
-    // Create a new map of query parameters
-    final Map<String, String> updatedQueryParams = Map.from(url.queryParameters)
-      ..addAll({'key': apiKey, 'secret': apiSecret});
+    final creds = _closed ? await _checkCredentials() : true;
+    if (creds) {
+      // Create a new map of query parameters
+      final Map<String, String> updatedQueryParams = Map.from(
+        url.queryParameters,
+      )..addAll({'key': apiKey, 'secret': apiSecret});
 
-    // Create a new Uri with the updated query parameters
-    final updatedUri = url.replace(queryParameters: updatedQueryParams);
+      // Create a new Uri with the updated query parameters
+      final updatedUri = url.replace(queryParameters: updatedQueryParams);
 
-    final response = await super.post(
-      updatedUri,
-      headers: headers,
-      body: body,
-      encoding: encoding,
-    );
+      final response = await super.post(
+        updatedUri,
+        headers: headers,
+        body: body,
+        encoding: encoding,
+      );
 
-    if (_closed) throw Exception(response);
+      if (_closed) throw Exception(response);
 
-    _parseRateLimitHeaders(response); // Parse rate limit headers
+      _parseRateLimitHeaders(response); // Parse rate limit headers
 
-    if (validate) {
-      _validateResponse(response, response.statusCode);
+      if (validate) {
+        _validateResponse(response, response.statusCode);
+      }
+      return response;
     }
-    return response;
+    throw 'Credentials could not be retreived';
   }
 
   @override
@@ -261,28 +300,33 @@ class DiscogsHttpClient extends http.BaseClient {
     bool validate = false,
   }) async {
     await _checkRateLimit(); // Enforce rate limiting
-    // Create a new map of query parameters
-    final Map<String, String> updatedQueryParams = Map.from(url.queryParameters)
-      ..addAll({'key': apiKey, 'secret': apiSecret});
+    final creds = _closed ? await _checkCredentials() : true;
+    if (creds) {
+      // Create a new map of query parameters
+      final Map<String, String> updatedQueryParams = Map.from(
+        url.queryParameters,
+      )..addAll({'key': apiKey, 'secret': apiSecret});
 
-    // Create a new Uri with the updated query parameters
-    final updatedUri = url.replace(queryParameters: updatedQueryParams);
+      // Create a new Uri with the updated query parameters
+      final updatedUri = url.replace(queryParameters: updatedQueryParams);
 
-    final response = await super.post(
-      updatedUri,
-      headers: headers,
-      body: body,
-      encoding: encoding,
-    );
+      final response = await super.post(
+        updatedUri,
+        headers: headers,
+        body: body,
+        encoding: encoding,
+      );
 
-    if (_closed) throw Exception(response);
+      if (_closed) throw Exception(response);
 
-    _parseRateLimitHeaders(response); // Parse rate limit headers
+      _parseRateLimitHeaders(response); // Parse rate limit headers
 
-    if (validate) {
-      _validateResponse(response, response.statusCode);
+      if (validate) {
+        _validateResponse(response, response.statusCode);
+      }
+      return response;
     }
-    return response;
+    throw 'Credentials could not be retreived';
   }
 
   @override

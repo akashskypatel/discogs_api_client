@@ -6,8 +6,8 @@ import 'package:discogs_api_client/discogs_api_client.dart';
 void main() {
   late final DiscogsApiClient client;
 
-  setUpAll(() async {
-    client = await DiscogsApiClient.create();
+  setUpAll(() {
+    client = DiscogsApiClient();
   });
 
   tearDownAll(() {

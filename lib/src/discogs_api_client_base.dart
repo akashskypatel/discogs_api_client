@@ -1,4 +1,6 @@
 //file path: lib/src/discogs_api_client_base.dart
+import 'dart:async';
+
 import 'package:discogs_api_client/src/clients/artist_client.dart';
 import 'package:discogs_api_client/src/clients/discogs_http_client.dart';
 import 'package:discogs_api_client/src/clients/label_client.dart';
@@ -17,28 +19,28 @@ class DiscogsApiClient {
   late final MasterClient masters;
   late final ReleaseClient releases;
   late final SearchClient search;
+  late StreamSubscription<bool?> _httpClientClosedSubscription;
+  bool _isInitialized = false;
 
-  /// Private constructor for creating an instance of [DiscogsApiClient].
-  ///
-  /// Use the [create] factory method to initialize the client.
-  DiscogsApiClient._();
+  bool get isInitialized => _isInitialized;
 
   /// Factory method to create and initialize an instance of [DiscogsApiClient].
   ///
   /// This method initializes the HTTP client and all sub-clients.
   ///
   /// Returns a [Future<DiscogsApiClient>] that resolves to an initialized client.
-  static Future<DiscogsApiClient> create() async {
-    final client = DiscogsApiClient._();
-    await client._initialize();
-    return client;
+  DiscogsApiClient() {
+    _initialize();
+    _httpClientClosedSubscription = _httpClient.closedController.stream.listen(
+      (closed) => _isInitialized = !closed,
+    );
   }
 
   /// Initializes the HTTP client and all sub-clients.
   ///
   /// This method is called internally by the [create] factory method.
-  Future<void> _initialize() async {
-    _httpClient = await DiscogsHttpClient.create();
+  void _initialize() {
+    _httpClient = DiscogsHttpClient();
     artists = ArtistClient(_httpClient);
     labels = LabelClient(_httpClient);
     masters = MasterClient(_httpClient);
@@ -49,5 +51,8 @@ class DiscogsApiClient {
   /// Closes the underlying HTTP client and releases any resources.
   ///
   /// Call this method when the client is no longer needed to free up resources.
-  void close() => _httpClient.close();
+  void close() {
+    _httpClientClosedSubscription.cancel();
+    _httpClient.close();
+  }
 }

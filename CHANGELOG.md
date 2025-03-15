@@ -1,3 +1,11 @@
+## 0.1.5
+
+### Changes
+- Streamlined client construction. It is no longer asynchronous. Internal methods will wait for credentials to be loaded from `.env` file but the client will be constructed immediately.
+- Other optimizations
+- Updated tests
+- Updated Readme
+
 ## 0.1.4
 
 ### Changes

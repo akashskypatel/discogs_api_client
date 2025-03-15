@@ -7,8 +7,8 @@ import 'package:fuzzy/fuzzy.dart';
 void main() {
   late final DiscogsApiClient client;
 
-  setUpAll(() async {
-    client = await DiscogsApiClient.create();
+  setUpAll(() {
+    client = DiscogsApiClient();
   });
 
   tearDownAll(() {
@@ -33,12 +33,41 @@ void main() {
       print('Fetch artist releases: ${response['releases'][0]['id']}');
     });
 
-    test('Fetch specific artist details', () async {
-      final name = 'bad bunny';
-      final res = await client.search.search(query: name, type: 'artist');
-      if (res['results'].length > 0) {
+    test('Fetch specific artist and pagination test', () async {
+      final name = 'rick astley';
+      final _perPage = 5;
+      var res = await client.search.search(
+        query: name,
+        type: 'artist',
+        perPage: _perPage,
+      );
+      final _pages = res['pagination']['pages'];
+      final _items = res['pagination']['items'];
+      var _results = [];
+
+      if (res['results'].length > 0) _results.addAll(res['results']);
+      print('pages:$_pages page:${res['pagination']['page']}');
+
+      var i = 2;
+      for (i; i <= _pages; i++) {
+        res = await client.search.search(
+          query: name,
+          type: 'artist',
+          page: i,
+          perPage: _perPage,
+        );
+        expect(res['pagination']['page'], equals(i));
+        if (res['results'].length > 0) _results.addAll(res['results']);
+        print('pages:$_pages page:$i');
+      }
+
+      expect(i - 1, equals(_pages));
+      print('results:${_results.length}');
+      expect(_results.length, equals(_items));
+
+      if (_results.isNotEmpty) {
         final names =
-            res['results']
+            _results
                 .where((e) => e['type'] == 'artist')
                 .map((e) => {'id': e['id'], 'title': e['title']})
                 .toList();
@@ -52,7 +81,7 @@ void main() {
           options: FuzzyOptions(threshold: 1, keys: [keys]),
         );
         final result = fuzzy.search(name);
-        //result.forEach((e) => print(e.score == 0.0));
+
         if (result.where((e) => e.score == 0.0).isNotEmpty) {
           print(result.firstWhere((e) => e.score == 0.0).item['id']);
           expect(result.firstWhere((e) => e.score == 0.0).score, equals(0.0));
