@@ -63,43 +63,55 @@ class SearchClient {
     int? perPage = 500,
     int? page = 1,
   }) async {
-    // Build query parameters
-    final Map<String, String> queryParams = {
-      'per_page': perPage.toString(),
-      'page': page.toString(),
-    };
+    try {
+      // Build query parameters
+      final Map<String, String> queryParams = {
+        'per_page': perPage.toString(),
+        'page': page.toString(),
+      };
 
-    // Add optional parameters if they are provided
-    if (query != null) queryParams['q'] = query;
-    if (type != null) queryParams['type'] = type;
-    if (title != null) queryParams['title'] = title;
-    if (releaseTitle != null) queryParams['release_title'] = releaseTitle;
-    if (credit != null) queryParams['credit'] = credit;
-    if (artist != null) queryParams['artist'] = artist;
-    if (anv != null) queryParams['anv'] = anv;
-    if (label != null) queryParams['label'] = label;
-    if (genre != null) queryParams['genre'] = genre;
-    if (style != null) queryParams['style'] = style;
-    if (country != null) queryParams['country'] = country;
-    if (year != null) queryParams['year'] = year;
-    if (format != null) queryParams['format'] = format;
-    if (catno != null) queryParams['catno'] = catno;
-    if (barcode != null) queryParams['barcode'] = barcode;
-    if (track != null) queryParams['track'] = track;
-    if (submitter != null) queryParams['submitter'] = submitter;
-    if (contributor != null) queryParams['contributor'] = contributor;
+      // Add optional parameters if they are provided
+      if (query != null) queryParams['q'] = query;
+      if (type != null) queryParams['type'] = type;
+      if (title != null) queryParams['title'] = title;
+      if (releaseTitle != null) queryParams['release_title'] = releaseTitle;
+      if (credit != null) queryParams['credit'] = credit;
+      if (artist != null) queryParams['artist'] = artist;
+      if (anv != null) queryParams['anv'] = anv;
+      if (label != null) queryParams['label'] = label;
+      if (genre != null) queryParams['genre'] = genre;
+      if (style != null) queryParams['style'] = style;
+      if (country != null) queryParams['country'] = country;
+      if (year != null) queryParams['year'] = year;
+      if (format != null) queryParams['format'] = format;
+      if (catno != null) queryParams['catno'] = catno;
+      if (barcode != null) queryParams['barcode'] = barcode;
+      if (track != null) queryParams['track'] = track;
+      if (submitter != null) queryParams['submitter'] = submitter;
+      if (contributor != null) queryParams['contributor'] = contributor;
 
-    // Build the URI
-    final uri = Uri.https(_baseurl, '/database/search', queryParams);
+      // Build the URI
+      final uri = Uri.https(_baseurl, '/database/search', queryParams);
 
-    // Make the HTTP GET request
-    final response = await _httpClient.get(uri);
+      // Make the HTTP GET request
+      final response = await _httpClient.get(uri);
 
-    // Handle the response
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load search results: ${response.statusCode}');
+      // Handle the response
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        if (!_httpClient.isSilent) {
+          throw Exception(
+            'Failed to load search results: ${response.statusCode}',
+          );
+        }
+        return jsonDecode(response.body);
+      }
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception('Failed to load search results: $e \n $stackTrace');
+      }
+      return {'error': '$e \n $stackTrace'};
     }
   }
 
@@ -111,6 +123,13 @@ class SearchClient {
   ///
   /// Throws an [Exception] if the request fails (e.g., due to network issues or invalid parameters).
   Future<Map<String, dynamic>> searchArtist(String name) async {
-    return search(query: name, type: 'artist');
+    try {
+      return search(query: name, type: 'artist');
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception('Failed to load search results: $e \n $stackTrace');
+      }
+      return {'error': '$e \n $stackTrace'};
+    }
   }
 }

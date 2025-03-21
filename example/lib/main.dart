@@ -3,7 +3,7 @@ import 'dart:io';
 
 void main() async {
   final client = DiscogsApiClient();
-  var response = await client.artists.artists(3840);
+  var response = await client.artists.artists(194);
   print(response);
   response = await client.artists.artistReleases(3840);
   print(response);

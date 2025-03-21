@@ -23,17 +23,29 @@ class MasterClient {
   ///
   /// Throws an [Exception] if the request fails (e.g., due to network issues or an invalid master release ID).
   Future<Map<String, dynamic>> masters(int id) async {
-    // Build the URI
-    final uri = Uri.https(_baseurl, '/masters/$id');
+    try {
+      // Build the URI
+      final uri = Uri.https(_baseurl, '/masters/$id');
 
-    // Make the HTTP GET request
-    final response = await _httpClient.get(uri);
+      // Make the HTTP GET request
+      final response = await _httpClient.get(uri);
 
-    // Handle the response
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load search results: ${response.statusCode}');
+      // Handle the response
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        if (!_httpClient.isSilent) {
+          throw Exception(
+            'Failed to load masters results: ${response.statusCode}',
+          );
+        }
+        return jsonDecode(response.body);
+      }
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception('Failed to load masters results: $e \n $stackTrace');
+      }
+      return {'error': '$e \n $stackTrace'};
     }
   }
 
@@ -63,31 +75,45 @@ class MasterClient {
     int? perPage = 500,
     int? page = 1,
   }) async {
-    // Build query parameters
-    final Map<String, String> queryParams = {
-      'per_page': perPage.toString(),
-      'page': page.toString(),
-    };
+    try {
+      // Build query parameters
+      final Map<String, String> queryParams = {
+        'per_page': perPage.toString(),
+        'page': page.toString(),
+      };
 
-    // Add optional parameters if they are provided
-    if (sort != null) queryParams['sort'] = sort;
-    if (sortOrder != null) queryParams['sort_order'] = sortOrder;
-    if (format != null) queryParams['format'] = format;
-    if (label != null) queryParams['label'] = label;
-    if (release != null) queryParams['release'] = release;
-    if (country != null) queryParams['country'] = country;
+      // Add optional parameters if they are provided
+      if (sort != null) queryParams['sort'] = sort;
+      if (sortOrder != null) queryParams['sort_order'] = sortOrder;
+      if (format != null) queryParams['format'] = format;
+      if (label != null) queryParams['label'] = label;
+      if (release != null) queryParams['release'] = release;
+      if (country != null) queryParams['country'] = country;
 
-    // Build the URI
-    final uri = Uri.https(_baseurl, '/masters/$id/versions', queryParams);
+      // Build the URI
+      final uri = Uri.https(_baseurl, '/masters/$id/versions', queryParams);
 
-    // Make the HTTP GET request
-    final response = await _httpClient.get(uri);
+      // Make the HTTP GET request
+      final response = await _httpClient.get(uri);
 
-    // Handle the response
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load search results: ${response.statusCode}');
+      // Handle the response
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        if (!_httpClient.isSilent) {
+          throw Exception(
+            'Failed to load masterReleaseVersions results: ${response.statusCode}',
+          );
+        }
+        return jsonDecode(response.body);
+      }
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception(
+          'Failed to load masterReleaseVersions results: $e \n $stackTrace',
+        );
+      }
+      return {'error': '$e \n $stackTrace'};
     }
   }
 }

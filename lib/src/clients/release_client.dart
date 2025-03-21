@@ -24,21 +24,33 @@ class ReleaseClient {
   ///
   /// Throws an [Exception] if the request fails (e.g., due to network issues or an invalid release ID).
   Future<Map<String, dynamic>> releases(int id, {String? currAbbr}) async {
-    // Build query parameters
-    final Map<String, String> queryParams = {};
-    if (currAbbr != null) queryParams['curr_abbr'] = currAbbr;
+    try {
+      // Build query parameters
+      final Map<String, String> queryParams = {};
+      if (currAbbr != null) queryParams['curr_abbr'] = currAbbr;
 
-    // Build the URI
-    final uri = Uri.https(_baseurl, '/releases/$id', queryParams);
+      // Build the URI
+      final uri = Uri.https(_baseurl, '/releases/$id', queryParams);
 
-    // Make the HTTP GET request
-    final response = await _httpClient.get(uri);
+      // Make the HTTP GET request
+      final response = await _httpClient.get(uri);
 
-    // Handle the response
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load search results: ${response.statusCode}');
+      // Handle the response
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        if (!_httpClient.isSilent) {
+          throw Exception(
+            'Failed to load releases results: ${response.statusCode}',
+          );
+        }
+        return jsonDecode(response.body);
+      }
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception('Failed to load releases results: $e \n $stackTrace');
+      }
+      return {'error': '$e \n $stackTrace'};
     }
   }
 
@@ -54,17 +66,31 @@ class ReleaseClient {
     int id, {
     String? username,
   }) async {
-    // Build the URI
-    final uri = Uri.https(_baseurl, '/releases/$id/rating/$username');
+    try {
+      // Build the URI
+      final uri = Uri.https(_baseurl, '/releases/$id/rating/$username');
 
-    // Make the HTTP GET request
-    final response = await _httpClient.get(uri);
+      // Make the HTTP GET request
+      final response = await _httpClient.get(uri);
 
-    // Handle the response
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load search results: ${response.statusCode}');
+      // Handle the response
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        if (!_httpClient.isSilent) {
+          throw Exception(
+            'Failed to load releasesRatingByUser results: ${response.statusCode}',
+          );
+        }
+        return jsonDecode(response.body);
+      }
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception(
+          'Failed to load releasesRatingByUser results: $e \n $stackTrace',
+        );
+      }
+      return {'error': '$e \n $stackTrace'};
     }
   }
 
@@ -76,17 +102,31 @@ class ReleaseClient {
   ///
   /// Throws an [Exception] if the request fails (e.g., due to network issues or an invalid release ID).
   Future<Map<String, dynamic>> releasesRating(int id) async {
-    // Build the URI
-    final uri = Uri.https(_baseurl, '/releases/$id/rating');
+    try {
+      // Build the URI
+      final uri = Uri.https(_baseurl, '/releases/$id/rating');
 
-    // Make the HTTP GET request
-    final response = await _httpClient.get(uri);
+      // Make the HTTP GET request
+      final response = await _httpClient.get(uri);
 
-    // Handle the response
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load search results: ${response.statusCode}');
+      // Handle the response
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        if (!_httpClient.isSilent) {
+          throw Exception(
+            'Failed to load releasesRating results: ${response.statusCode}',
+          );
+        }
+        return jsonDecode(response.body);
+      }
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception(
+          'Failed to load releasesRating results: $e \n $stackTrace',
+        );
+      }
+      return {'error': '$e \n $stackTrace'};
     }
   }
 
@@ -98,17 +138,31 @@ class ReleaseClient {
   ///
   /// Throws an [Exception] if the request fails (e.g., due to network issues or an invalid release ID).
   Future<Map<String, dynamic>> releasesStats(int id) async {
-    // Build the URI
-    final uri = Uri.https(_baseurl, '/releases/$id/stats');
+    try {
+      // Build the URI
+      final uri = Uri.https(_baseurl, '/releases/$id/stats');
 
-    // Make the HTTP GET request
-    final response = await _httpClient.get(uri);
+      // Make the HTTP GET request
+      final response = await _httpClient.get(uri);
 
-    // Handle the response
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load search results: ${response.statusCode}');
+      // Handle the response
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        if (!_httpClient.isSilent) {
+          throw Exception(
+            'Failed to load releasesStats results: ${response.statusCode}',
+          );
+        }
+        return jsonDecode(response.body);
+      }
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception(
+          'Failed to load releasesStats results: $e \n $stackTrace',
+        );
+      }
+      return {'error': '$e \n $stackTrace'};
     }
   }
 }

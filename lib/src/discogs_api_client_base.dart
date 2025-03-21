@@ -21,7 +21,6 @@ class DiscogsApiClient {
   late final SearchClient search;
   late StreamSubscription<bool?> _httpClientClosedSubscription;
   bool _isInitialized = false;
-
   bool get isInitialized => _isInitialized;
 
   /// Factory method to create and initialize an instance of [DiscogsApiClient].
@@ -29,8 +28,8 @@ class DiscogsApiClient {
   /// This method initializes the HTTP client and all sub-clients.
   ///
   /// Returns a [Future<DiscogsApiClient>] that resolves to an initialized client.
-  DiscogsApiClient() {
-    _initialize();
+  DiscogsApiClient({bool isSilent = true}) {
+    _initialize(isSilent: true);
     _httpClientClosedSubscription = _httpClient.closedController.stream.listen(
       (closed) => _isInitialized = !closed,
     );
@@ -39,8 +38,8 @@ class DiscogsApiClient {
   /// Initializes the HTTP client and all sub-clients.
   ///
   /// This method is called internally by the [create] factory method.
-  void _initialize() {
-    _httpClient = DiscogsHttpClient();
+  void _initialize({bool isSilent = true}) {
+    _httpClient = DiscogsHttpClient(isSilent: isSilent);
     artists = ArtistClient(_httpClient);
     labels = LabelClient(_httpClient);
     masters = MasterClient(_httpClient);

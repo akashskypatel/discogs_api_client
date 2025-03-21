@@ -1,3 +1,9 @@
+## 0.1.6
+
+### Changes
+- Improved failing conditions.
+- Added silent failing.
+
 ## 0.1.5
 
 ### Changes

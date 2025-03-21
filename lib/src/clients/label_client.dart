@@ -28,18 +28,29 @@ class LabelClient {
       'key': _httpClient.apiKey,
       'secret': _httpClient.apiSecret,
     };
+    try {
+      // Build the URI
+      final uri = Uri.https(_baseurl, '/labels/$id', queryParams);
 
-    // Build the URI
-    final uri = Uri.https(_baseurl, '/labels/$id', queryParams);
+      // Make the HTTP GET request
+      final response = await _httpClient.get(uri);
 
-    // Make the HTTP GET request
-    final response = await _httpClient.get(uri);
-
-    // Handle the response
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load search results: ${response.statusCode}');
+      // Handle the response
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        if (!_httpClient.isSilent) {
+          throw Exception(
+            'Failed to load labels results: ${response.statusCode}',
+          );
+        }
+        return jsonDecode(response.body);
+      }
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception('Failed to load labels results: $e \n $stackTrace');
+      }
+      return {'error': '$e \n $stackTrace'};
     }
   }
 
@@ -57,23 +68,37 @@ class LabelClient {
     int? perPage = 500,
     int? page = 1,
   }) async {
-    // Build query parameters
-    final Map<String, String> queryParams = {
-      'per_page': perPage.toString(),
-      'page': page.toString(),
-    };
+    try {
+      // Build query parameters
+      final Map<String, String> queryParams = {
+        'per_page': perPage.toString(),
+        'page': page.toString(),
+      };
 
-    // Build the URI
-    final uri = Uri.https(_baseurl, '/labels/$id/releases', queryParams);
+      // Build the URI
+      final uri = Uri.https(_baseurl, '/labels/$id/releases', queryParams);
 
-    // Make the HTTP GET request
-    final response = await _httpClient.get(uri);
+      // Make the HTTP GET request
+      final response = await _httpClient.get(uri);
 
-    // Handle the response
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load search results: ${response.statusCode}');
+      // Handle the response
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        if (!_httpClient.isSilent) {
+          throw Exception(
+            'Failed to load labelReleases results: ${response.statusCode}',
+          );
+        }
+        return jsonDecode(response.body);
+      }
+    } catch (e, stackTrace) {
+      if (!_httpClient.isSilent) {
+        throw Exception(
+          'Failed to load labelReleases results: $e \n $stackTrace',
+        );
+      }
+      return {'error': '$e \n $stackTrace'};
     }
   }
 }
