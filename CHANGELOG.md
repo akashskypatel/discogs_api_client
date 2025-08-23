@@ -1,3 +1,8 @@
+## 0.2.0
+
+### Added
+- Ability to pass custom IOClient
+
 ## 0.1.6
 
 ### Changes

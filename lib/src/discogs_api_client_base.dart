@@ -7,6 +7,7 @@ import 'package:discogs_api_client/src/clients/label_client.dart';
 import 'package:discogs_api_client/src/clients/master_client.dart';
 import 'package:discogs_api_client/src/clients/release_client.dart';
 import 'package:discogs_api_client/src/clients/search_client.dart';
+import 'package:http/http.dart' as http;
 
 /// The main client for interacting with the Discogs API.
 ///
@@ -28,8 +29,8 @@ class DiscogsApiClient {
   /// This method initializes the HTTP client and all sub-clients.
   ///
   /// Returns a [Future<DiscogsApiClient>] that resolves to an initialized client.
-  DiscogsApiClient({bool isSilent = true}) {
-    _initialize(isSilent: true);
+  DiscogsApiClient({http.Client? httpClient, bool isSilent = true}) {
+    _initialize(httpClient: httpClient, isSilent: true);
     _httpClientClosedSubscription = _httpClient.closedController.stream.listen(
       (closed) => _isInitialized = !closed,
     );
@@ -38,8 +39,8 @@ class DiscogsApiClient {
   /// Initializes the HTTP client and all sub-clients.
   ///
   /// This method is called internally by the [create] factory method.
-  void _initialize({bool isSilent = true}) {
-    _httpClient = DiscogsHttpClient(isSilent: isSilent);
+  void _initialize({http.Client? httpClient, bool isSilent = true}) {
+    _httpClient = DiscogsHttpClient(httpClient, isSilent);
     artists = ArtistClient(_httpClient);
     labels = LabelClient(_httpClient);
     masters = MasterClient(_httpClient);

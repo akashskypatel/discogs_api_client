@@ -14,7 +14,7 @@ class DiscogsHttpClient extends http.BaseClient {
   static String _apiKey = '';
   static String _apiSecret = '';
   static final _logger = Logger('DiscogsApi.DiscogsHttpClient');
-  static final http.Client _httpClient = http.Client();
+  static late final http.Client _httpClient;
 
   static int _rateLimit = 60; // Default rate limit
   static int _rateLimitUsed = 0;
@@ -36,7 +36,8 @@ class DiscogsHttpClient extends http.BaseClient {
   };
 
   /// Private constructor for creating an instance of [DiscogsHttpClient].
-  DiscogsHttpClient({bool isSilent = true}) {
+  DiscogsHttpClient([http.Client? httpClient, bool isSilent = true]) {
+    _httpClient = httpClient ?? http.Client();
     _isSilent = isSilent;
     _create();
   }
