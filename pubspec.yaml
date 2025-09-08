@@ -1,6 +1,6 @@
 name: discogs_api_client
 description: "A Dart/Flutter client to interact with Discogs API to access artists, labels, masters, releases, and search. Does not provide any methods that need user level authentication."
-version: 0.2.0
+version: 0.2.1
 homepage: https://github.com/akashskypatel/discogs_api_client
 
 environment:

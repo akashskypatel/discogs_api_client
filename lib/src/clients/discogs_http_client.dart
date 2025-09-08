@@ -14,7 +14,7 @@ class DiscogsHttpClient extends http.BaseClient {
   static String _apiKey = '';
   static String _apiSecret = '';
   static final _logger = Logger('DiscogsApi.DiscogsHttpClient');
-  static late final http.Client _httpClient;
+  static http.Client _httpClient = http.Client();
 
   static int _rateLimit = 60; // Default rate limit
   static int _rateLimitUsed = 0;
